@@ -1,4 +1,4 @@
-import { CollisionType, Color, DisplayMode, Engine, Random, Vector, vec } from "excalibur";
+import { CollisionType, Color, DisplayMode, Engine, Random, Vector, vec, Input } from "excalibur";
 import { MatterJsSystem } from "./matterjs.system";
 import { Block } from "./block";
 
@@ -47,5 +47,11 @@ game.input.pointers.primary.on('down', evt => {
     });
     game.add(newBlock);
 });
+
+game.input.keyboard.on('press', (evt) => {
+    if (evt.key === Input.Keys.D) {
+        constrainedBlock.removeConstraints();
+    }
+})
 
 game.start();

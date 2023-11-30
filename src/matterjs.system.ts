@@ -29,6 +29,9 @@ export class MatterJsSystem extends System<MatterJsBodyComponent | TransformComp
             const matterJsConstraint = msg.data.get(MatterJsConstraintComponent);
             if (matterJsConstraint) {
                 Matter.Composite.add(this.matterEngine.world, matterJsConstraint.constraint);
+                matterJsConstraint.removed$.subscribe(() => {
+                    Matter.World.remove(this.matterEngine.world, matterJsConstraint.constraint);
+                });
             }
         }
     }

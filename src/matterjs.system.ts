@@ -1,46 +1,48 @@
-import { AddedEntity, Entity, Physics, RemovedEntity, System, SystemType, TransformComponent, isAddedSystemEntity } from "excalibur";
+import { Entity, Query, System, SystemType, TransformComponent, World } from "excalibur";
 import { MatterJsBodyComponent } from "./matterjs-body.component";
 
 import * as Matter from 'matter-js';
 import { MatterJsConstraintComponent } from "./matterjs-constraint.component";
 
 
-export class MatterJsSystem extends System<MatterJsBodyComponent | TransformComponent> {
-    public readonly types = ['matterjs.component', 'ex.transform'] as const;
+export class MatterJsSystem extends System {
+    // Excalibur physics system disabled in new Engine({physics: false})
     public systemType = SystemType.Update;
     matterEngine: Matter.Engine = Matter.Engine.create();
     priority = 99;
-
-    initialize() {
-        Physics.enabled = false;
+    query: Query<typeof MatterJsBodyComponent | typeof TransformComponent>;
+    constructor(world: World) {
+        super();
         this.matterEngine.gravity.y = 1;
-    }
+        this.query = world.query([MatterJsBodyComponent, TransformComponent]);
 
-    override notify(msg: AddedEntity | RemovedEntity) {
-        // Add bodies to the matter world
-        if (isAddedSystemEntity(msg)) {
-            const matterJsComponent = msg.data.get(MatterJsBodyComponent);
+        this.query.entityAdded$.subscribe(entity => {
+            const matterJsComponent = entity.get(MatterJsBodyComponent);
             
             if (matterJsComponent) {
                 Matter.Composite.add(this.matterEngine.world, matterJsComponent.matterJsBody);
             }
 
             // Optional component
-            const matterJsConstraint = msg.data.get(MatterJsConstraintComponent);
+            const matterJsConstraint = entity.get(MatterJsConstraintComponent);
             if (matterJsConstraint) {
                 Matter.Composite.add(this.matterEngine.world, matterJsConstraint.constraint);
                 matterJsConstraint.removed$.subscribe(() => {
                     Matter.World.remove(this.matterEngine.world, matterJsConstraint.constraint);
                 });
             }
-        }
+        })
+
+        this.query.entityRemoved$.subscribe(entity => {
+            // TODO remove from matter js
+        })
     }
 
-    override update(entities: Entity[], delta: number) {
+    override update(delta: number) {
         // Update matter js simulation
         Matter.Engine.update(this.matterEngine, delta);
         // Sync transforms from matter to excalibur
-        for (let entity of entities) {
+        for (let entity of this.query.entities) {
             const transform = entity.get(TransformComponent);
             const matterJsComponent = entity.get(MatterJsBodyComponent);
             if (matterJsComponent && transform) {

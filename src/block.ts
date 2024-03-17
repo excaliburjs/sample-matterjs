@@ -1,4 +1,4 @@
-import { Actor, ActorArgs, CollisionType, Observable, RemovedComponent, Vector } from "excalibur";
+import { Actor, ActorArgs, CollisionType, Vector } from "excalibur";
 import { MatterJsBodyComponent } from "./matterjs-body.component";
 import { MatterJsConstraintComponent } from "./matterjs-constraint.component";
 

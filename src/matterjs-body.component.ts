@@ -4,7 +4,6 @@ import * as Matter from 'matter-js';
 
 
 export class MatterJsBodyComponent extends Component {
-    public readonly type = 'matterjs.component' as const;
     matterJsBody!: Matter.Body;
 
     constructor(public width: number, public height: number, public isStatic = false) {

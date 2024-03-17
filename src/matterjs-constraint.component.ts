@@ -2,8 +2,7 @@ import { Component, Entity, Observable } from "excalibur";
 import * as Matter from 'matter-js';
 
 
-export class MatterJsConstraintComponent extends Component<'matterjs.constraint'> {
-    public readonly type = 'matterjs.constraint' as const;
+export class MatterJsConstraintComponent extends Component {
     constraint: Matter.Constraint;
     removed$ = new Observable<MatterJsConstraintComponent>();
 

@@ -1,16 +1,17 @@
-import { CollisionType, Color, DisplayMode, Engine, Random, Vector, vec, Input } from "excalibur";
+import { CollisionType, Color, DisplayMode, Engine, Random, vec, Input } from "excalibur";
 import { MatterJsSystem } from "./matterjs.system";
 import { Block } from "./block";
 
 const game = new Engine({
     width: 600,
     height: 400,
+    physics: false, // Turn off excalibur physics
     displayMode: DisplayMode.FitScreenAndFill,
     fixedUpdateFps: 60
 });
 
 
-game.currentScene.world.systemManager.addSystem(new MatterJsSystem());
+game.currentScene.world.systemManager.addSystem(MatterJsSystem);
 const floor = new Block({
     pos: vec(400, 400),
     width: 800,
